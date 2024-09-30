@@ -119,6 +119,71 @@ suspend fun prepareBreakfast() {
     }
 }
 
+// 1. Cooperative Scheduling - coroutines yield manually
+suspend fun workingHard() {
+    logger.info("Working Hard")
+    // CPU intensive computation
+    while (true) {
+        // do some hard work
+    }
+    delay(100L)
+    logger.info("Hard work done ✅")
+}
+
+suspend fun takeABreak() {
+    logger.info("Taking a break")
+    delay(1000L)
+    logger.info("Break done ✅")
+}
+
+suspend fun workingHardRoutine() {
+    val dispatcher: CoroutineDispatcher = Dispatchers.Default.limitedParallelism(1)
+
+    coroutineScope {
+        launch(dispatcher) { workingHard() }
+        launch(dispatcher) { takeABreak() }
+    }
+}
+
+suspend fun workingNicely() {
+    logger.info("Working Nicely")
+    // CPU intensive computation
+    while (true) {
+        delay(100L) // Give a change to the dispatcher to yield and run another coroutine
+    }
+    delay(100L)
+    logger.info("Hard work done ✅")
+}
+
+suspend fun workingNicelyRoutine() {
+    val dispatcher: CoroutineDispatcher = Dispatchers.Default.limitedParallelism(1)
+
+    coroutineScope {
+        launch(dispatcher) { workingNicely() }
+        launch(dispatcher) { takeABreak() }
+    }
+}
+
+/*
+Dispatchers:
+- Dispatchers.Default: For normal code or yielding coroutines
+- Dispatchers.IO: IO bound code that is blocking and coroutines that are not going to yield
+- Custom Dispatcher: Executors.newFixedThreadPool(8).asCoroutinesDispatchers()
+ */
+
+// Cancellation
+suspend fun forgettingFriendBirthdayRoutine() {
+    coroutineScope {
+        val workingJob: Job = launch { workingNicely() }
+        launch {
+            delay(2000L) // After 2 seconds I remember my friends birthday
+            workingJob.cancel() // Sends a SIGNAL to the coroutine to cancel. Cancellation happens at first yielding point
+            workingJob.join() //  At this point you are sure that the coroutine was cancelled
+            logger.info("I forgot my friends birthday! Buying a present now! 🎁")
+        }
+    }
+}
+
 suspend fun main() {
-    prepareBreakfast()
+    forgettingFriendBirthdayRoutine()
 }
