@@ -178,12 +178,85 @@ suspend fun forgettingFriendBirthdayRoutine() {
         launch {
             delay(2000L) // After 2 seconds I remember my friends birthday
             workingJob.cancel() // Sends a SIGNAL to the coroutine to cancel. Cancellation happens at first yielding point
-            workingJob.join() //  At this point you are sure that the coroutine was cancelled
+            workingJob.join() //  At this point you are sure that the coroutine has been stopped
+            logger.info("I forgot my friends birthday! Buying a present now! 🎁")
+        }
+    }
+}
+
+suspend fun forgettingFriendBirthdayRoutineUncancelable() {
+    coroutineScope {
+        val workingJob: Job = launch { workingHard() }
+        launch {
+            delay(2000L) // After 2 seconds I remember my friends birthday
+            logger.info("Trying to stop working")
+            workingJob.cancel() // Sends a SIGNAL to the coroutine to cancel. Cancellation happens at first yielding point -> Never
+            workingJob.join() //  At this point you are sure that the coroutine has been stopped
+            logger.info("I forgot my friends birthday! Buying a present now! 🎁")
+        }
+    }
+}
+
+// Release Resources at Cancel Time
+class Desk : AutoCloseable {
+    init {
+        logger.info("Starting to work on this Desk")
+    }
+
+    override fun close() {
+        logger.info("Cleaning up the desk")
+    }
+}
+
+suspend fun forgettingFriendBirthdayRoutineWithResource() {
+    val desk = Desk()
+    coroutineScope {
+        val workingJob: Job =
+            launch {
+                desk.use { _ ->
+                    // This resource will be closed upon completion of the coroutine
+                    workingNicely()
+                }
+            }
+        // You can also clean up the resources yourself manually
+        workingJob.invokeOnCompletion { exception: Throwable? ->
+            // can handle CancellationException  and Completion of Coroutine differently here
+            // desk.close()
+            logger.info("Make sure to talk to my colleagues that I will be out for 30 min")
+        }
+        launch {
+            delay(2000L) // After 2 seconds I remember my friends birthday
+            workingJob.cancel() // Sends a SIGNAL to the coroutine to cancel. Cancellation happens at first yielding point -> Never
+            workingJob.join() //  At this point you are sure that the coroutine has been stopped
+            logger.info("I forgot my friends birthday! Buying a present now! 🎁")
+        }
+    }
+}
+
+// Cancellation propagates to child coroutines
+suspend fun drinkWater() {
+    while (true) {
+        logger.info("Drinking water")
+        delay(1000L)
+    }
+}
+
+suspend fun forgettingFriendBirthdayRoutineAndStayHydrated() {
+    coroutineScope {
+        val workingJob: Job =
+            launch {
+                launch { workingNicely() }
+                launch { drinkWater() }
+            }
+        launch {
+            delay(2000L) // After 2 seconds I remember my friends birthday
+            workingJob.cancel() // Sends a SIGNAL to the coroutine to cancel. Cancellation happens at first yielding point
+            workingJob.join() //  At this point you are sure that the coroutine has been stopped
             logger.info("I forgot my friends birthday! Buying a present now! 🎁")
         }
     }
 }
 
 suspend fun main() {
-    forgettingFriendBirthdayRoutine()
+    forgettingFriendBirthdayRoutineAndStayHydrated()
 }
