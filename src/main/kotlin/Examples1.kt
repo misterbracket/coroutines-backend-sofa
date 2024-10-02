@@ -1,4 +1,5 @@
 @file:OptIn(DelicateCoroutinesApi::class)
+@file:Suppress("ktlint:standard:no-wildcard-imports")
 
 package org.example
 
@@ -12,7 +13,7 @@ import org.slf4j.LoggerFactory
 val logger: Logger = LoggerFactory.getLogger("CoroutineLogger")
 
 suspend fun bathTime() {
-    // Continuation = datastructure that stores all local context
+    // Continuation = data structure that stores all local context
     logger.info("Going to the bathroom")
     delay(500L) // suspends/"blocks" the computation
     // Continuation restored here
