@@ -10,3 +10,34 @@ The coroutine’s context is part of the Continuation object we’ve seen before
 It contains the name of the coroutine, the dispatcher (aka, the pool of threads executing the coroutines), the exception handler, and so on.
 * When the parent coroutine is canceled, it also cancels the children coroutines.
 * When a child coroutine throws an exception, the parent coroutine is also stopped.
+
+## Closing Resources
+
+```kotlin
+class Desk : AutoCloseable {
+    init {
+        logger.info("Starting to work on the desk")
+    }
+
+    override fun close() {
+        logger.info("Cleaning the desk")
+    }
+}
+
+
+suspend fun forgettingTheBirthDayRoutineAndCleaningTheDesk() {
+    val desk = Desk()
+    coroutineScope {
+        val workingJob = launch {
+            desk.use { _ ->
+                workingConsciousness()
+            }
+        }
+        launch {
+            delay(2000L)
+            workingJob.cancelAndJoin()
+            logger.info("I forgot the birthday! Let's go to the mall!")
+        }
+    }
+}
+```

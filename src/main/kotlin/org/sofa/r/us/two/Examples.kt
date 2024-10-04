@@ -32,7 +32,7 @@ suspend fun makeCoffee() {
     logger.info("Done with coffee ✅")
 }
 
-suspend fun structuredMorningRoutine() {
+suspend fun notStructuredMorningRoutine() {
     coroutineScope {
         val bathJob = launch { bathTime() }
         val waterJob =
@@ -109,5 +109,5 @@ suspend fun workingNicelyRoutine() {
 }
 
 suspend fun main() {
-    structuredMorningRoutine()
+    notStructuredMorningRoutine()
 }

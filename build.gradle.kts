@@ -15,6 +15,7 @@ dependencies {
 
     // Logback (SLF4J Binding)
     implementation("ch.qos.logback:logback-classic:1.2.3") // Use the latest version of Logback
+    implementation(kotlin("script-runtime"))
 }
 
 tasks.test {
