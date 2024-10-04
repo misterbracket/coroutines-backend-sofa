@@ -1,8 +1,18 @@
-package org.example
+@file:OptIn(DelicateCoroutinesApi::class)
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
+package org.sofa.r.us.two
 
 import kotlinx.coroutines.*
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
-suspend fun bathTime1() {
+// coroutine - "thread"
+// parallel + concurrent apps
+
+val logger: Logger = LoggerFactory.getLogger("CoroutineLogger")
+
+suspend fun bathTime() {
     // Continuation = data structure that stores all local context
     logger.info("Going to the bathroom")
     delay(500L) // suspends/"blocks" the computation
@@ -10,13 +20,13 @@ suspend fun bathTime1() {
     logger.info("Bath time done ✅")
 }
 
-suspend fun boilingWater1() {
+suspend fun boilingWater() {
     logger.info("Boiling Water")
     delay(1000L)
     logger.info("Water boiled ✅")
 }
 
-suspend fun makeCoffee1() {
+suspend fun makeCoffee() {
     logger.info("Starting to make coffee")
     delay(500L)
     logger.info("Done with coffee ✅")
@@ -24,10 +34,10 @@ suspend fun makeCoffee1() {
 
 suspend fun structuredMorningRoutine() {
     coroutineScope {
-        val bathJob = launch { bathTime1() }
+        val bathJob = launch { bathTime() }
         val waterJob =
             launch {
-                boilingWater1()
+                boilingWater()
             }
         // block here
         // semantic block
@@ -35,28 +45,25 @@ suspend fun structuredMorningRoutine() {
         waterJob.join()
 
         launch {
-            makeCoffee1()
+            makeCoffee()
         }
     }
 }
 
-suspend fun structuredMorningRoutine2() {
-    coroutineScope {
+suspend fun structuredMorningRoutineWithException() {
+    supervisorScope {
         coroutineScope {
-            launch { bathTime1() }
-            launch {
-                boilingWater1()
-            }
+            launch { bathTime() }
+            launch { boilingWater() }
+            throw Exception("Boom 💥")
         }
 
-        launch {
-            makeCoffee1()
-        }
+        launch { makeCoffee() }
     }
 }
 
 // Cooperative scheduling
-suspend fun workingHard1() {
+suspend fun workingHard() {
     logger.info("Working Hard")
     // CPU intensive computation
     while (true) {
@@ -66,40 +73,41 @@ suspend fun workingHard1() {
     logger.info("Hard work done ✅")
 }
 
-suspend fun takeABreak1() {
+suspend fun takeABreak() {
     logger.info("Taking a break")
     delay(1000L)
     logger.info("Break done ✅")
 }
 
-suspend fun workingHardRoutine1() {
+suspend fun workingHardRoutine() {
     val dispatcher: CoroutineDispatcher = Dispatchers.Default.limitedParallelism(2)
 
     coroutineScope {
-        launch(dispatcher) { workingHard1() }
-        launch(dispatcher) { takeABreak1() }
+        launch(dispatcher) { workingHard() }
+        launch(dispatcher) { takeABreak() }
     }
 }
 
-suspend fun workingNicely1() {
+suspend fun workingNicely() {
     logger.info("Working Nicely")
     // CPU intensive computation
     while (true) {
         // do some hard work
-        delay(100L)
+        //  delay(100L)
+        yield()
     }
     logger.info("Hard work done ✅")
 }
 
-suspend fun workingNicelyRoutine1() {
+suspend fun workingNicelyRoutine() {
     val dispatcher: CoroutineDispatcher = Dispatchers.Default.limitedParallelism(1)
 
     coroutineScope {
-        launch(dispatcher) { workingNicely1() }
-        launch(dispatcher) { takeABreak1() }
+        launch(dispatcher) { workingNicely() }
+        launch(dispatcher) { takeABreak() }
     }
 }
 
 suspend fun main() {
-    workingNicelyRoutine1()
+    structuredMorningRoutine()
 }

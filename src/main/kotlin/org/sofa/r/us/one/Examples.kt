@@ -1,7 +1,7 @@
 @file:OptIn(DelicateCoroutinesApi::class)
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.example
+package org.sofa.r.us.one
 
 import kotlinx.coroutines.*
 import org.slf4j.Logger
