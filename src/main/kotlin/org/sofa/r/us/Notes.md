@@ -1,0 +1,12 @@
+
+## Structural Concurrency
+The coroutines scope represents the implementation of structural concurrency in Kotlin. 
+The runtime blocks the execution of the block lambda until all the coroutines started inside the block lambda are completed.
+These coroutines are called children coroutines of the scope.
+Moreover, structural concurrency also brings us the following features:
+
+* Children coroutines inherit the context (CoroutineContext) of the parent coroutine, and they can override it.
+The coroutine’s context is part of the Continuation object we’ve seen before.
+It contains the name of the coroutine, the dispatcher (aka, the pool of threads executing the coroutines), the exception handler, and so on.
+* When the parent coroutine is canceled, it also cancels the children coroutines.
+* When a child coroutine throws an exception, the parent coroutine is also stopped.
