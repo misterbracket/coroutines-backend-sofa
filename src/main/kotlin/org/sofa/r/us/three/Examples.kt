@@ -102,21 +102,26 @@ suspend fun playingWithRubberDuck() {
 
 suspend fun myMorningRoutineWithStructureAndCancellationAndNesting() {
     coroutineScope {
-        coroutineScope {
-            val bathroomJob =
-                launch {
-                    launch { bathTime() }
-                    launch { playingWithRubberDuck() }
-                }
-            bathroomJob.cancelAndJoin()
-
-            launch { boilingWater() }
+        launch {
+            launch { bathTime() }
+            launch { playingWithRubberDuck() }
         }
-
+        launch {
+            boilingWater()
+        }
+    }
+    coroutineScope {
         launch { makeCoffee() }
     }
+
+//    CoroutineScope(Dispatchers.Default).launch {
+//        launch { makeCoffee() }
+//    }
 }
 
 suspend fun main() {
     myMorningRoutineWithStructureAndCancellationAndNesting()
+//    CoroutineScope(Dispatchers.Default).launch {
+//        launch { makeCoffee() }
+//    }
 }

@@ -41,3 +41,11 @@ suspend fun forgettingTheBirthDayRoutineAndCleaningTheDesk() {
     }
 }
 ```
+
+
+Passing a continuation object between threads is called a continuation passing style (CPS).
+Go to Tools => Kotlin => Show Kotlin Bytecode => Decompile to see the continuation object.
+```kotlin
+// Show a continuation object
+suspendCancellableCoroutine<Unit> { continuation -> logger.info("Continuation: $continuation") }
+```
