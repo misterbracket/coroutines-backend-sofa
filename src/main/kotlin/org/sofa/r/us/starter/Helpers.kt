@@ -30,22 +30,22 @@ suspend fun playingWithRubberDuck() {
 
 // Cooperative Scheduling
 suspend fun workingHard() {
-    org.sofa.r.us.two.logger
+    logger
         .info("Working Hard")
     // CPU intensive computation
     while (true) {
         // do some hard work
     }
     delay(100L)
-    org.sofa.r.us.two.logger
+    logger
         .info("Hard work done ✅")
 }
 
 suspend fun takeABreak() {
-    org.sofa.r.us.two.logger
+    logger
         .info("Taking a break")
     delay(1000L)
-    org.sofa.r.us.two.logger
+    logger
         .info("Break done ✅")
 }
 
@@ -54,8 +54,7 @@ suspend fun workingHardRoutine() {
 
     coroutineScope {
         launch(dispatcher) {
-            org.sofa.r.us.two
-                .workingHard()
+            workingHard()
         }
         launch(dispatcher) { takeABreak() }
     }

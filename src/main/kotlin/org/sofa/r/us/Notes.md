@@ -49,3 +49,6 @@ Go to Tools => Kotlin => Show Kotlin Bytecode => Decompile to see the continuati
 // Show a continuation object
 suspendCancellableCoroutine<Unit> { continuation -> logger.info("Continuation: $continuation") }
 ```
+
+
+![Concurrency and Parallelism](concurrency_parallelism.png)
