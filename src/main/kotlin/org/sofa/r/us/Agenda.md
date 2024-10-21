@@ -27,3 +27,4 @@
       4. Explain why workingHard Routine never yields back
       5. Create a new function workingNicely with suspension point.
       6. How does the OS assign resources to processes?
+      7. How a not yielding coroutine can block the thread and is not cancellable.
