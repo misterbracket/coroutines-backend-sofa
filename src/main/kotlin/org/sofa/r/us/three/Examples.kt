@@ -117,6 +117,15 @@ suspend fun myMorningRoutineWithStructureAndCancellationAndNesting() {
     }
 }
 
+suspend fun createThreads() {
+    (1..1_000_000).map {
+        Thread.ofVirtual().start({
+            logger.info("Thread $it started")
+        })
+    }
+    logger.info("Threads created")
+}
+
 suspend fun main() {
-    myMorningRoutineWithStructureAndCancellationAndNesting()
+    createThreads()
 }
